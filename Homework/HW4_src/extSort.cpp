@@ -108,9 +108,43 @@ int main(int argc, char* argv[]) {
             // USE: out_debug << value << endl;
 	    int n = PAGE_SIZE;
 	    int m = PAGE_SIZE;
+
+	    int file_size = PAGE_SIZE * MEM_SIZE * pow(nRun);
+	    int file1 = 0;
+	    int file2 = 0;
 	    
-	    for (int run = 0; run < 4 * pow(nRun) - 1; run++) {
-		if (n == PAGE_SIZE) {
+	    for (int run = 0; run < 2 * MEM_SIZE * pow(nRun); run++) {
+		// first time we do not execute this while clause.
+		if (file1 == file_size) {
+		    while (m < PAGE_SIZE) {
+			int value = buf2[m++];
+			file2++;
+
+			out.write((char*) &value, sizeof(int));
+			out_debug << value << endl;
+		    }
+		} else if (file2 == file_size) {
+		    while (n < PAGE_SIZE) {
+			int value = buf1[n++];
+			file1++;
+
+			out.write((char*) &value, sizeof(int));
+			out_debug << value << endl;
+		    }
+		} else {
+		    while (n < PAGE_SIZE && m < PAGE_SIZE) {
+			if (buf1[n] < buf2[m]) 
+			    file1++;
+			else 
+			    file2++;
+
+			int value = (buf1[n] < buf2[m])? buf1[n++] : buf2[m++];
+			out.write((char*) &value, sizeof(int));
+			out_debug << value << endl;
+		    }
+		}
+
+		if (n == PAGE_SIZE && file1 < file_size) {
 		    int k = 0;
 		    n = 0;
 
@@ -120,7 +154,7 @@ int main(int argc, char* argv[]) {
 		    }
 		} 
 
-		if (m == PAGE_SIZE) {
+		if (m == PAGE_SIZE && file2 < file_size) {
 		    int k = 0;
 		    m = 0;
 
@@ -129,22 +163,20 @@ int main(int argc, char* argv[]) {
 			k++;
 		    }
 		}
-
-		while (n < PAGE_SIZE && m < PAGE_SIZE) {
-		    int value = (buf1[n] < buf2[m]) ? buf1[n++] : buf2[m++];
-		    out.write((char*) &value, sizeof(int));
-		    out_debug << value << endl;
-		}		
 	    }
 
 	    while (n < PAGE_SIZE) {
 		int value = buf1[n++];
+
+		file1++;
 		out.write((char*) &value, sizeof(int));
 		out_debug << value << endl;
 	    }
 
 	    while (m < PAGE_SIZE) {
 		int value = buf2[m++];
+
+		file2++;
 		out.write((char*) &value, sizeof(int));
 		out_debug << value << endl;
 	    }
