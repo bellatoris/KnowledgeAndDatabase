@@ -40,6 +40,7 @@ void sortAndWrite(int* buf, int len, int fileID) {
     out_debug.close();
 }
 
+// help function for power of integer
 int pow(int n) {
     int i = 0;
     int power = 1;
@@ -114,8 +115,10 @@ int main(int argc, char* argv[]) {
             int file2 = 0;
             
             for (int run = 0; run < 2 * MEM_SIZE * pow(nRun); run++) {
-                // first time we do not execute this while clause.
+                // first time we do not execute if else clause
                 if (file1 == file_size) {
+		    // if either file1 or file2 is consumed entirely,
+		    // we need to consume the other file only.
                     while (m < PAGE_SIZE) {
                         int value = buf2[m++];
                         file2++;
@@ -143,7 +146,8 @@ int main(int argc, char* argv[]) {
                         out_debug << value << endl;
                     }
                 }
-                
+
+		// if buffer is consumed all, we need to fill the buffer.
                 if (n == PAGE_SIZE && file1 < file_size) {
                     int k = 0;
                     n = 0;
@@ -164,7 +168,8 @@ int main(int argc, char* argv[]) {
                     }
                 }
             }
-            
+        
+	    // consume last buffer 
             while (n < PAGE_SIZE) {
                 int value = buf1[n++];
                 
