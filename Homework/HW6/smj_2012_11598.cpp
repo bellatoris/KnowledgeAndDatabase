@@ -34,20 +34,26 @@ void smj(int* dataR, int lenR, int* dataS, int lenS, char* output) {
 	// ex) out.write((char*) (dataS + j), sizeof(int));
 	int i = 0;
 	int j = 0;
-	while (i < lenR && j < lenS) {
-	    while (dataR[i] < dataS[j]) {
+	int k = 0;
+	while (i < lenR && k < lenS) {
+	    while (dataR[i] < dataS[k]) {
 		i++;
 	    }
-	    // current dataR[i] >= dataS[j] 
-	    while (dataR[i] >= dataS[j]) {
-		if (dataR[i] == dataS[j]) {
+	    while (dataR[i] > dataS[k]) {
+		k++;
+	    }
+	    j = k;
+	    while (dataR[i] == dataS[k]) {
+		j = k;
+		while (dataS[j] == dataR[i]) {
 		    out.write((char*) (dataR + i), sizeof(int));
 		    out.write((char*) (dataS + j), sizeof(int));
-		    // out << dataR[i] << " " << dataS[j] << endl;
+		    cout << dataR[i] << " " << dataS[j] << endl;
+		    j++;
 		}
-		j++;
+		i++;
 	    }
-	    // current dataR[i] < dataS[j]
+	    k = j;
 	}
 	out.close();
 }
